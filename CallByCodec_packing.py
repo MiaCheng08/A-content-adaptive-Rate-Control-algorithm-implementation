@@ -18,7 +18,7 @@ def notZero(x):
     return x != 0
 
 
-def parseLookahead(path):
+def parse(path):
     round = 1
     avgScore = {}
     len = 0
@@ -32,7 +32,7 @@ def parseLookahead(path):
     return avgScore
 
 
-def getCRF(pred_param):
+def get(pred_param):
     featureNum = len(pred_param['curr_feature'])
     # Input data
     csvFile = pd.read_csv(pred_param['existedfeaturePath'], header=None)
@@ -44,7 +44,7 @@ def getCRF(pred_param):
         features[:, i] = preprocessing.scale(features[:, i])
 
     curr_feature = features[-1]
-    curr_feature = np.expand_dims(curr_feature, axis=0)#这个必须加上
+    curr_feature = np.expand_dims(curr_feature, axis=0)
     # model3
     model = keras.models.load_model(pred_param['modelPath'], custom_objects={'curve_simility_cby_lossV1': curve_simility_cby_lossV1})
     params = model.predict(curr_feature).flatten()#, batch_size=1
@@ -52,7 +52,7 @@ def getCRF(pred_param):
     return crf
 
 
-def curve_simility_cby_lossV1(y_true, y_pred):  # y_true, y_predz
+def curve_simility_cby_lossV1(y_true, y_pred):
     R = np.arange(0.2, 12, 0.5, dtype=np.float32)
     len = R.size
     lnR = [math.log(x) for x in R]
@@ -85,7 +85,7 @@ if __name__ == '__main__':
             key, value = option.split(" ",1)
             coding_option[key] = value
     featurePath = coding_option['feature'] 
-    feature_Lookahead = parseLookahead(featurePath)
+    feature_Lookahead = parse(featurePath)
 
     pred_param['videopath'] = coding_option['input']
 
@@ -102,5 +102,5 @@ if __name__ == '__main__':
     for item in featureList:
         pred_param['curr_feature'].append(float(record_features[item]))
 
-    crf = getCRF(pred_param)
-    print(crf)
+    p = get(pred_param)
+    print(p)
